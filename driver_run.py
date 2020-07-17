@@ -3,25 +3,30 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
+from collections import OrderedDict
 import pandas as pd
 import time
 import pyautogui
 import random
+import os
 
 
 search = "DonaldTrump"
 
 
+if not os.path.exists(search):
+    os.mkdir(search)
 
 # Global variables
 post_class_css_selector = "._5pcr.userContentWrapper"
 comment_class_css_selector = "._7a94._7a9d"
 get_title_div_dict = {"data-testid":"post_message"}
-get_timestamp_span_dict = {"class": "timestampContent"}
+get_timestamp_span_dict = {"class": "_5ptz"}
 get_reactions_span_dict = {"class": "_1n9k"}
 get_comments_span_dict = {"class": "_3l3x"}
+get_num_share_anchor_dict = {"class": "_3rwx _42ft"}
 
-posts_dataframe_dict = {}
+posts_dataframe_dict = OrderedDict()
 posts_dataframe_list = []
 
 def no_login():
@@ -57,21 +62,27 @@ def get_title(i):
         posts_dataframe_dict["title"] = text
 
 def get_timestamp(i):
-    for j in i.find_all('span', get_timestamp_span_dict):
-        posts_dataframe_dict["timestamp"] = j.text
+    for j in i.find_all('abbr', get_timestamp_span_dict):
+        posts_dataframe_dict["timestamp"] = j['title']
 
 def get_reactions(i):
-    count = 0
     for j in i.find_all('span', get_reactions_span_dict):
         for k in j.find_all('a'):
-            if count == 2:
+            if k['aria-label'].lower().find('care') != -1:
                 posts_dataframe_dict['care'] = k['aria-label']
-            if count == 1:
+            if k['aria-label'].lower.find('love') != -1:
                 posts_dataframe_dict['love'] = k['aria-label']
-                count += 1
-            if count == 0:
+            if k['aria-label'].lower().find('likes') != -1:
                 posts_dataframe_dict['likes'] = k['aria-label']
-                count += 1
+            if k['aria-label'].lower().find('wow') != -1:
+                posts_dataframe_dict['wow'] = k['aria-label']
+            if k['aria-label'].lower().find('haha') != -1:
+                posts_dataframe_dict['haha'] = k['aria-label']
+            if k['aria-label'].lower().find('sad') != -1:
+                posts_dataframe_dict['sad'] = k['aria-label']
+def get_num_shares(i):
+    for j in i.find_all('a', get_num_share_anchor_dict):
+        posts_dataframe_dict['shares'] = j.text
 
 def extend_comments(i):
     for j in i.find_elements_by_css_selector(comment_class_css_selector):
@@ -103,8 +114,13 @@ def append_to_list():
     posts_dataframe_dict.clear()
 
 def save_to_file():
-    sector16 = pd.DataFrame(posts_dataframe_list)
-    sector16.to_csv('facebook.csv', index=False, mode='a')
+    filename = f'{search}.csv'
+    sector16 = pd.DataFrame(posts_dataframe_list, columns=['title', 'timestamp', 'likes', 'love', 'care', 'wow', 'haha', 'sad', 'shares', 'comments'])
+    if os.path.exists(filename):
+        sector16.to_csv(os.path.join(search,filename), header=False, mode='a', index=False)
+    else:
+        sector16.to_csv(os.path.join(search,filename), header=False, mode='a', index=True)
+
     posts_dataframe_list.clear()
 
 def scroll_to_bottom():
@@ -143,6 +159,7 @@ while(True):
             get_title(source)
             get_timestamp(source)
             get_reactions(source)
+            get_num_shares(source)
             get_comments(source)
 
             append_to_list()
