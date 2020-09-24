@@ -1,9 +1,6 @@
 # facebook-scraper
+<p>Run <code>driver.py</code> for scraping the posts.</p>
+<p>Change chromedriver.exe to chromedriver in code for using on linux</p>
+<p>Search query in file is a facebook page to be scraped</p>
+<p>The chrome window has to be active to scrape the posts and a headless version will be easily spotted as a bot, so no use of headless version</p>
 
-<h4>Facebook scraper for getting post, timestamp, all reactions(like, love, care) and no. of comments from a public page</h4>
-Posts can be scraped without logging in as well.
-<br><br>
-<b>Version 2:</b>
-<br>
-Getting photos and video links as well<br>
-Videos are in Blob(buffering state) format and cannot be downloaded as such.
