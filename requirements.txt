@@ -1,0 +1,6 @@
+selenium
+pyautogui
+tqdm
+pandas
+beautifulsoup4
+lxml

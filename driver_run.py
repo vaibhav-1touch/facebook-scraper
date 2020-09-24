@@ -11,6 +11,7 @@ import random
 import os
 import urllib.request
 from tqdm import tqdm
+import lxml
 
 search = "unity3d"
 
@@ -77,7 +78,7 @@ def get_reactions(i):
                 posts_dataframe_dict['care'] = k['aria-label']
             if k['aria-label'].lower().find('love') != -1:
                 posts_dataframe_dict['love'] = k['aria-label']
-            if k['aria-label'].lower().find('likes') != -1:
+            if k['aria-label'].lower().find('like') != -1:
                 posts_dataframe_dict['likes'] = k['aria-label']
             if k['aria-label'].lower().find('wow') != -1:
                 posts_dataframe_dict['wow'] = k['aria-label']
@@ -158,7 +159,7 @@ option.add_experimental_option("prefs", {
 })
 
 driver = webdriver.Chrome(
-    options=option, executable_path='/usr/share/chromedriver')
+    options=option, executable_path='chromedriver.exe')
 s = f"https://facebook.com/{search}/posts"
 driver.get(s)
 driver.maximize_window()
