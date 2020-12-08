@@ -13,7 +13,7 @@ import urllib.request
 from tqdm import tqdm
 import lxml
 
-search = "unity3d"
+search = "PlayStation"
 
 
 post_counter = 0
@@ -24,6 +24,7 @@ if not os.path.exists(os.path.join(search, 'images')):
 # Global variables
 post_class_css_selector = "._5pcr.userContentWrapper"
 comment_class_css_selector = "._7a94._7a9d"
+bypass_class = "._ohf.rfloat"
 get_title_div_dict = {"data-testid":"post_message"}
 get_timestamp_span_dict = {"class": "_5ptz"}
 get_reactions_span_dict = {"class": "_1n9k"}
@@ -49,6 +50,15 @@ def no_login():
 def selenium_source_posts():
     post_class = driver.find_elements_by_css_selector(post_class_css_selector)
     return post_class
+
+def bypass():
+    try:
+        bypass_elem = driver.find_element_by_css_selector(bypass_class)
+        for i in bypass_elem.find_elements_by_tag_name('a'):
+            i.click()
+            return
+    except:
+        pass
 
 def beautiful_source_posts(post_class):
     x = []
@@ -160,8 +170,26 @@ option.add_experimental_option("prefs", {
 
 driver = webdriver.Chrome(
     options=option, executable_path='chromedriver.exe')
-s = f"https://facebook.com/{search}/posts"
-driver.get(s)
+# s = f"https://facebook.com/{search}"
+driver.get("https://facebook.com")
+time.sleep(random.randint(2,3) + random.random())
+# driver.get(s)
+pyautogui.keyDown('Ctrl')
+pyautogui.press('l')
+pyautogui.keyUp('Ctrl')
+
+pyautogui.press('right')
+time.sleep(random.random())
+pyautogui.press('/')
+
+for i in search:
+    pyautogui.press(i)
+    time.sleep(random.random())
+
+pyautogui.hotkey('enter')
+
+
+# bypass()
 driver.maximize_window()
 
 no_login()
